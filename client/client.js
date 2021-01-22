@@ -4,7 +4,7 @@ const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-const socket = io('http://192.168.88.252:3000/');
+const socket = io('http://192.168.88.239:3000/');
 
 var mode = 'sc';
 var input = '';
@@ -12,14 +12,16 @@ var input = '';
 socket.on("connect", function (data) {
   process.stdin.on('keypress', (str, key) => {
 
-    if (str == '/' && mode == 'sc' && input.length == 0)
-    {
-      mode = 'kb';
-      socket.emit(mode, 'slash');
+    if (key['name'] == 'backspace') {
+      input = '';
+      socket.emit('kb', 'BackSpace');
     }
 
-    if (key['name'] == 'backspace') {
-      socket.emit('kb', 'BackSpace');
+    if (str == '/')
+    {
+      input = '';
+      mode = 'kb';
+      socket.emit(mode, 'slash');
     }
 
     if (key['name'] == 'return')
@@ -45,30 +47,6 @@ socket.on("connect", function (data) {
       }
     }
 
-    // socket.emit(mode, input);
-    
-    /*
-    if (key['name'] != undefined)
-    {
-      if (key['name'] == 'backspace') {
-        socket.emit('kb', 'BackSpace');
-      }
-      else if (key['name'] == 'return') {
-        socket.emit('kb', 'Return');
-      }
-      else
-      {
-        socket.emit('kb', key['name']);
-      }
-    }
-    else
-    {
-      if (str == '/') {
-        console.log('slash');
-        socket.emit('kb', 'slash');
-      }
-    }
-    */
     console.log(str);
   });
 });
